@@ -1,0 +1,59 @@
+---
+- name: Install AWS CLI
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name: Download AWS CLI
+      command: "curl -o /usr/local/bin/awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip creates=/usr/local/bin/awscliv2.zip"
+      args:
+        creates: /usr/local/bin/awscliv2.zip
+
+    - name: Extract and Install AWS CLI
+      ansible.builtin.unarchive:
+        src: "/usr/local/bin/awscliv2.zip"
+        dest: "/usr/local/bin"
+        remote_src: yes
+      when: "not ('/usr/local/bin/aws' is exists)"
+
+    - name: Cleanup downloaded zip file
+      file:
+        path: "/usr/local/bin/awscliv2.zip"
+        state: absent
+
+- name: Install Maven, git, and docker on Jenkins
+  hosts: jenkins
+  become: yes
+  tasks:
+    - name: Disable HashiCorp repository temporarily
+      command: "yum-config-manager --disable hashicorp"
+
+    - name: Install Maven using yum
+      command: "yum install maven -y"
+      ignore_errors: yes
+
+    - name: Install Git
+      yum:
+        name: git
+        state: present
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes 
+
+    - name: Add jenkins to the docker group
+      user:
+        name: jenkins
+        groups: docker
+        append: yes
+
+    - name: Restart Docker service
+      service:
+        name: docker
+        state: restarted    
