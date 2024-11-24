@@ -90,6 +90,13 @@ resource "aws_security_group" "monolithic_sg" {
   }
 
   ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -138,7 +145,101 @@ resource "aws_security_group" "ansible_sg" {
   }
 }
 
+resource "aws_security_group" "microservice_sg" {
+  vpc_id      = var.vpc_id
+  name        = "microservice-sg"
+  description = "Security group for Microservice server"
 
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "monitoring_sg" {
+  vpc_id      = var.vpc_id
+  name        = "monitoring-sg"
+  description = "Security group for Monitoring servers"
+
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9115
+    to_port     = 9115
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 # Define instances
 resource "aws_instance" "nexus_server" {
@@ -151,6 +252,32 @@ resource "aws_instance" "nexus_server" {
 
   tags = {
     Name = "nexus_server"
+  }
+}
+
+resource "aws_instance" "prometheus_server" {
+  ami                    = var.instance_ami
+  instance_type          = var.instance_type
+  key_name               = var.instance_key_name
+  vpc_security_group_ids = [aws_security_group.monitoring_sg.id]
+  subnet_id              = var.instance_subnet_id
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "prometheus_server"
+  }
+}
+
+resource "aws_instance" "grafana_server" {
+  ami                    = var.instance_ami
+  instance_type          = var.instance_type
+  key_name               = var.instance_key_name
+  vpc_security_group_ids = [aws_security_group.monitoring_sg.id]
+  subnet_id              = var.instance_subnet_id
+  associate_public_ip_address = true
+
+  tags = {
+    Name = "grafana_server"
   }
 }
 
@@ -192,5 +319,4 @@ resource "aws_instance" "ansible_server" {
     Name = "ansible_server"
   }
 }
-
 
