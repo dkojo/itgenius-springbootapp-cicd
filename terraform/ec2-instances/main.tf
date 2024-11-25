@@ -256,7 +256,7 @@ resource "aws_instance" "grafana_server" {
 
 resource "aws_instance" "sonarqube_server" {
   ami                    = var.instance_ami
-  instance_type          = t2.medium
+  instance_type          = t2.micro
   key_name               = var.instance_key_name
   vpc_security_group_ids = [aws_security_group.sonarqube_sg.id]
   subnet_id              = var.instance_subnet_id
