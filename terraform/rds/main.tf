@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 data "aws_secretsmanager_secret" "db_secret" {
-  name = "arn:aws:secretsmanager:us-east-1:870342665742:secret:itgenius-secret-zg64j5" # Replace with the name or ARN of your secret
+  name = "itgenius-secret" # Replace with the name or ARN of your secret
 }
 
 
@@ -45,8 +45,8 @@ resource "aws_db_instance" "itgenius_instance" {
   instance_class       = var.db_instance_class
   identifier           = "itgeniusdb"
   db_name                 = var.db_name
-  username             = local.db_credentials["username"]
-  password             = local.db_credentials["password"]
+  username             = local.db_credentials["itgenius-master"]
+  password             = local.db_credentials["itgenius1234"]
   publicly_accessible  = true
   vpc_security_group_ids = [aws_security_group.itgenius_sg.id]
   db_subnet_group_name = aws_db_subnet_group.itgenius_subnet_group.name
