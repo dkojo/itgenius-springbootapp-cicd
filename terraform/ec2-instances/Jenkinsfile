@@ -9,7 +9,7 @@ pipeline {
         string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/dkojo/itgenius-springbootapp-cicd.git', description: 'Github repository url')
         string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Github branch for your build')
         choice(name: 'TERRAFORM_ACTION', choices: ['', 'apply', 'destroy'], description: 'Select Terraform action: Apply or Destroy')
-        string(name: 'AWS_CREDENTIAL_ID', defaultValue: 'jenkins_aws_creds', description: 'AWS credentials id')
+        string(name: 'AWS_CREDENTIAL_ID', defaultValue: 'aws_creds', description: 'AWS credentials id')
     }
 
     environment {
