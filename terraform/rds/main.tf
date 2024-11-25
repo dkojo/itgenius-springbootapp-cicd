@@ -2,16 +2,16 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_secretsmanager_secret" "db_secret" {
+data "aws_secretsmanager_secret" "itgenius-secret" {
   name = "itgenius-secret"
 }
 
-data "aws_secretsmanager_secret_version" "db_secret_version" {
-  secret_id = data.aws_secretsmanager_secret.db_secret.id
+data "aws_secretsmanager_secret_version" "itgenius-secret_version" {
+  secret_id = data.aws_secretsmanager_secret.itgenius-secret.id
 }
 
 locals {
-  db_credentials = jsondecode(data.aws_secretsmanager_secret_version.db_secret_version.secret_string)
+  db_credentials = jsondecode(data.aws_secretsmanager_secret_version.itgenius-secret_version.secret_string)
 }
 
 # Security group for MySQL
