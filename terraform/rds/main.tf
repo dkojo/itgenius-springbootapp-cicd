@@ -3,8 +3,9 @@ provider "aws" {
 }
 
 data "aws_secretsmanager_secret" "db_secret" {
-  name = "itgenius-secret"
+  name = "arn:aws:secretsmanager:us-east-1:870342665742:secret:itgenius-secret-zg64j5" # Replace with the name or ARN of your secret
 }
+
 
 data "aws_secretsmanager_secret_version" "db_secret_version" {
   secret_id = data.aws_secretsmanager_secret.db_secret.id
