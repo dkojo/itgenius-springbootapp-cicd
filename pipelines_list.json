@@ -1,0 +1,22 @@
+[
+    {
+      "name": "terraform-rds",
+      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
+      "branch": "main",
+      "jenkinsfile": "terraform/rds/Jenkinsfile"
+    },
+    
+    {
+      "name": "infrastructure-configuration",
+      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
+      "branch": "main",
+      "jenkinsfile": "terraform/ec2-instances/Jenkinsfile"
+    },
+
+    {
+      "name": "secrets-manager",
+      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
+      "branch": "main",
+      "jenkinsfile": "secrets-manager/Jenkinsfile"
+    }
+  ]

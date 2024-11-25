@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 data "aws_secretsmanager_secret" "db_secret" {
-  name = "my-db-credentials"
+  name = "itgenius-credentials"
 }
 
 data "aws_secretsmanager_secret_version" "db_secret_version" {
