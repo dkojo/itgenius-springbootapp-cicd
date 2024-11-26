@@ -4,7 +4,7 @@
   become: yes
   tasks:
     - name: Download AWS CLI
-      command: "curl -o /usr/local/bin/awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip creates=/usr/local/bin/awscliv2.zip"
+      command: "curl -o /usr/local/bin/awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
       args:
         creates: /usr/local/bin/awscliv2.zip
 
@@ -13,23 +13,30 @@
         src: "/usr/local/bin/awscliv2.zip"
         dest: "/usr/local/bin"
         remote_src: yes
-      when: "not ('/usr/local/bin/aws' is exists)"
+      when: "'/usr/local/bin/aws' not in lookup('pipe', 'ls /usr/local/bin')"
 
     - name: Cleanup downloaded zip file
       file:
         path: "/usr/local/bin/awscliv2.zip"
         state: absent
 
-- name: Install Maven, git, and docker on Jenkins
+- name: Install Maven, Git, Docker, and MySQL client on Jenkins
   hosts: jenkins
   become: yes
   tasks:
+    - name: Check if HashiCorp repository exists
+      shell: "yum repolist | grep -qw hashicorp"
+      register: hashicorp_repo
+      ignore_errors: yes
+
     - name: Disable HashiCorp repository temporarily
       command: "yum-config-manager --disable hashicorp"
+      when: hashicorp_repo.rc == 0
 
     - name: Install Maven using yum
-      command: "yum install maven -y"
-      ignore_errors: yes
+      yum:
+        name: maven
+        state: present
 
     - name: Install Git
       yum:
@@ -54,6 +61,6 @@
         append: yes
 
     - name: Restart Docker service
-      service:
+      systemd:
         name: docker
-        state: restarted    
+        state: restarted
