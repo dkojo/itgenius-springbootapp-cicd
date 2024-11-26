@@ -7,7 +7,7 @@
     },
     
     {
-      "name": "infrastructure-configuration",
+      "name": "infrastructure-provisioning",
       "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
       "branch": "main",
       "jenkinsfile": "terraform/ec2-instances/Jenkinsfile"
