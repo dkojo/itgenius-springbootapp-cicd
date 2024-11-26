@@ -18,5 +18,19 @@
       "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
       "branch": "main",
       "jenkinsfile": "secrets-manager/Jenkinsfile"
+    },
+
+    {
+      "name": "ansible",
+      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
+      "branch": "main",
+      "jenkinsfile": "ansible/Jenkinsfile"
+    },
+
+    {
+      "name": "monolithic-pl",
+      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
+      "branch": "main",
+      "jenkinsfile": "monolithic-cicd/Jenkinsfile"
     }
   ]
