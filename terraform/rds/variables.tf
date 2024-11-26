@@ -10,7 +10,7 @@ variable "db_name" {
 
 variable "db_username" {
   description = "Master username for the database"
-  default     = "itgenius-master"
+  default     = "itgenius_master"
 }
 
 variable "db_password" {
