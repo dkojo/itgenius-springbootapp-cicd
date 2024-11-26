@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 data "aws_secretsmanager_secret" "db_secret" {
-  arn = "itgenius-secret" # Replace with the name or ARN of your secret
+name = "itgenius-secret" # Replace with the name or ARN of your secret
 }
 
 
