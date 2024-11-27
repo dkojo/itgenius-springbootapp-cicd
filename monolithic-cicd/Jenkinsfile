@@ -106,7 +106,7 @@ pipeline {
                 script {
                    def Command = '''
                        set -ex
-                       cd ~/blog-app/
+                       cd ~/itgenius-app/
                 # Check if any process is listening on port 8081 and kill it
                 PID=$(/usr/sbin/lsof -t -i:8081)
                 if [ -n "$PID" ]; then
@@ -117,8 +117,8 @@ pipeline {
                 fi
 
                 # Run the new jar file
-                java -jar blog-0.0.1-SNAPSHOT.jar > logfile 2>&1 &
-                echo "Started new blog application"
+                java -jar itgenuine-0.0.1-SNAPSHOT.jar > logfile 2>&1 &
+                echo "Started new itgenius application"
                 sleep 7
                 cat logfile
             '''
@@ -126,10 +126,10 @@ pipeline {
             sshPublisher(publishers: [sshPublisherDesc(
                 configName: env.MONOLITHIC_SERVER,
                 transfers: [sshTransfer(
-                    sourceFiles: 'target/blog-0.0.1-SNAPSHOT.jar',
+                    sourceFiles: 'target/itgenius-0.0.1-SNAPSHOT.jar',
                     removePrefix: 'target/',
                     makeEmptyDirs: false,
-                    remoteDirectory: '/blog-app/',
+                    remoteDirectory: '/itgenius-app/',
                     execCommand: Command,
                     execTimeout: 120000
                 )],
