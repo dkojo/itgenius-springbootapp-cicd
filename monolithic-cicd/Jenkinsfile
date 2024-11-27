@@ -99,6 +99,7 @@ pipeline {
             }
         }
     }
+    
         
         
         stage('Deploy To Monolithic Server') {
@@ -123,6 +124,21 @@ pipeline {
                 sleep 7
                 cat logfile
             '''
+
+        stage('Verify Prerequisites') {
+            steps {
+        sshCommand remote: remoteServerConfig, command: '''
+                if ! command -v lsof &> /dev/null
+            then
+                echo "lsof is not installed. Installing..."
+                sudo yum install -y lsof || sudo apt-get install -y lsof
+            else
+                echo "lsof is already installed."
+                fi
+            '''
+           }
+        
+        }    
 
             sshPublisher(publishers: [sshPublisherDesc(
                 configName: env.MONOLITHIC_SERVER,
