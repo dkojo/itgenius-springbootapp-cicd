@@ -8,8 +8,8 @@ pipeline {
         string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/dkojo/itgenius-springbootapp-cicd.git', description: 'Github repository url')
         string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Github branch for your build')
         string(name: 'SONARQUBE_SERVER_NAME', defaultValue: 'sonarqube_server', description: 'Name for your sonarqube server')
-        string(name: 'NEXUS_URL', defaultValue: '174.129.98.193:8081', description: 'Your Nexus URL')
-        string(name: 'NEXUS_CREDENTIAL', defaultValue: 'jenkins_nexus_creds', description: 'Your Nexus Credentials')
+        string(name: 'NEXUS_URL', defaultValue: 'ec2-44-220-136-131.compute-1.amazonaws.com:8081', description: 'Your Nexus URL')
+        string(name: 'NEXUS_CREDENTIAL', defaultValue: 'nexus_creds', description: 'Your Nexus Credentials')
         string(name: 'REMOTE_USER', defaultValue: 'ec2-user', description: 'Remote server username')
         string(name: 'MONOLITHIC_SERVER', defaultValue: 'monolithic_server', description: 'The monolithic server that Jenkins will SSH into Using Publish Over SSH.')
     }
