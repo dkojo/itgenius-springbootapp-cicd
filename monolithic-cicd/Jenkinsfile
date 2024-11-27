@@ -106,6 +106,7 @@ pipeline {
                 script {
                    def Command = '''
                        set -ex
+                       mkdir -p ~/itgenius-app/
                        cd ~/itgenius-app/
                 # Check if any process is listening on port 8081 and kill it
                 PID=$(/usr/sbin/lsof -t -i:8081)
@@ -126,7 +127,7 @@ pipeline {
             sshPublisher(publishers: [sshPublisherDesc(
                 configName: env.MONOLITHIC_SERVER,
                 transfers: [sshTransfer(
-                    sourceFiles: 'target/itgenius-0.0.1-SNAPSHOT.jar',
+                    sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar',
                     removePrefix: 'target/',
                     makeEmptyDirs: false,
                     remoteDirectory: '/itgenius-app/',
