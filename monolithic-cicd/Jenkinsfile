@@ -74,7 +74,7 @@ pipeline {
                   def nexusUrl = "${NEXUS_URL}"
                   def nexusCredentialsId = "${NEXUS_CREDENTIAL}"
                   def groupId = 'com.app'
-                  def artifactId = 'itgenuine-0.0.1-SNAPSHOT.jar'
+                  def artifactId = 'itgenuine'
                   def version = '0.0.1-SNAPSHOT'
                   def packaging = 'jar'
 
