@@ -217,7 +217,7 @@ resource "aws_security_group" "monitoring_sg" {
 # Define instances
 resource "aws_instance" "nexus_server" {
   ami                    = var.instance_ami
-  instance_type          = var.instance_type
+  instance_type          = t2.medium
   key_name               = var.instance_key_name
   vpc_security_group_ids = [aws_security_group.nexus_sg.id]
   subnet_id              = var.instance_subnet_id
