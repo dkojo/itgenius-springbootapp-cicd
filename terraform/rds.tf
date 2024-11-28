@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 data "aws_secretsmanager_secret" "db_secret" {
 name = "itgenius-secret" # Replace with the name or ARN of your secret
 }
