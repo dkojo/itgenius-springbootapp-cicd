@@ -15,26 +15,7 @@ locals {
   db_credentials = jsondecode(data.aws_secretsmanager_secret_version.db_secret_version.secret_string)
 }
 
-# Security group for MySQL
-resource "aws_security_group" "itgenius_sg" {
-  name        = "itgenius-mysql-sg"
-  description = "Allow MySQL traffic on port 3306"
-  vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Open to the world (modify for better security)
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
 
 # RDS MySQL Aurora Instance
 resource "aws_db_instance" "itgenius_instance" {

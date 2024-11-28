@@ -1,7 +1,3 @@
-provider "aws" {
-  region = var.region
-}
-
 # Define security groups
 resource "aws_security_group" "nexus_sg" {
   vpc_id      = var.vpc_id
@@ -214,82 +210,23 @@ resource "aws_security_group" "monitoring_sg" {
   }
 }
 
-# Define instances
-resource "aws_instance" "nexus_server" {
-  ami                    = var.instance_ami
-  instance_type          = t2.medium
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.nexus_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
+# Security group for MySQL
+resource "aws_security_group" "itgenius_sg" {
+  name        = "itgenius-mysql-sg"
+  description = "Allow MySQL traffic on port 3306"
+  vpc_id      = var.vpc_id
 
-  tags = {
-    Name = "nexus_server"
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to the world (modify for better security)
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-resource "aws_instance" "prometheus_server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.monitoring_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "prometheus_server"
-  }
-}
-
-resource "aws_instance" "grafana_server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.monitoring_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "grafana_server"
-  }
-}
-
-resource "aws_instance" "sonarqube_server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.sonarqube_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
-
-  tags = {
-    Name = "sonarqube_server"
-  }
-}
-
-resource "aws_instance" "monolithic_server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.monolithic_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
-
-   tags = {
-    Name = "monolithic_server"
-  }
-}
-
-resource "aws_instance" "ansible_server" {
-  ami                    = var.instance_ami
-  instance_type          = var.instance_type
-  key_name               = var.instance_key_name
-  vpc_security_group_ids = [aws_security_group.ansible_sg.id]
-  subnet_id              = var.instance_subnet_id
-  associate_public_ip_address = true
-
-   tags = {
-    Name = "ansible_server"
-  }
-}
-

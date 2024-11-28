@@ -1,16 +1,11 @@
 [
-    {
-      "name": "terraform-rds",
-      "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
-      "branch": "main",
-      "jenkinsfile": "terraform/rds/Jenkinsfile"
-    },
     
+  
     {
       "name": "infrastructure-provisioning",
       "repo": "https://github.com/dkojo/itgenius-springbootapp-cicd.git",
       "branch": "main",
-      "jenkinsfile": "terraform/ec2-instances/Jenkinsfile"
+      "jenkinsfile": "terraform/Jenkinsfile"
     },
 
     {

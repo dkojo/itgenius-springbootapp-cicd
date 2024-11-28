@@ -6,3 +6,4 @@ terraform {
     dynamodb_table = "itgenius-springboot-app-dynamoDB"
   }
 }
+

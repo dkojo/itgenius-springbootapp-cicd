@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     // Change into the Terraform code directory
-                    dir("${WORKSPACE}/terraform/ec2-instances") {
+                    dir("${WORKSPACE}/terraform") {
                          withCredentials([aws(credentialsId: "${AWS_CREDENTIAL_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                             sh 'terraform init'
                         }
@@ -55,7 +55,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    dir("${WORKSPACE}/terraform/ec2-instances") {
+                    dir("${WORKSPACE}/terraform") {
                          withCredentials([aws(credentialsId: "${AWS_CREDENTIAL_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                             sh 'terraform plan'
                         }
@@ -67,7 +67,7 @@ pipeline {
         stage('Terraform Apply Or Destroy') {
             steps {
                 script {
-                    dir("${WORKSPACE}/terraform/ec2-instances") {
+                    dir("${WORKSPACE}/terraform") {
                          withCredentials([aws(credentialsId: "${AWS_CREDENTIAL_ID}", accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                             sh 'terraform "${TERRAFORM_ACTION}" -auto-approve'
                         }

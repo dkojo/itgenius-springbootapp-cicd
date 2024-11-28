@@ -113,7 +113,7 @@ pipeline {
                     sshPublisher(publishers: [sshPublisherDesc(
                         configName: env.MONOLITHIC_SERVER,
                         transfers: [sshTransfer(
-                            sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar, .env',
+                            sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar, monolithic-cicd/.env',
                             removePrefix: 'target/',
                             makeEmptyDirs: false,
                             remoteDirectory: '/itgenius-app/',
