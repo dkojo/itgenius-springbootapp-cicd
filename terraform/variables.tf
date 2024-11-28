@@ -33,7 +33,7 @@ variable "instance_type" {
   description = "The Instance type"
   default     = "t2.micro"
 }
-variable "sonar_nexus.instances" {
+variable "sonar_nexus_instance_type" {
   description = "The Instance type"
   default     = "t2.medium"
 }
