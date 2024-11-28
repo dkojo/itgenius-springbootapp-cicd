@@ -5,13 +5,13 @@ pipeline {
     }
     parameters {
         string(name: 'GITHUB_CREDENTIAL', defaultValue: 'github_creds', description: 'Github access credentials id')
-        string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/dkojo/itgenius-springbootapp-cicd.git', description: 'Github repository url')
+        string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/dkojo/itgenius-springbootapp-cicd.git', description: 'Github repository URL')
         string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Github branch for your build')
-        string(name: 'SONARQUBE_SERVER_NAME', defaultValue: 'sonarqube_server', description: 'Name for your sonarqube server')
+        string(name: 'SONARQUBE_SERVER_NAME', defaultValue: 'sonarqube_server', description: 'Name for your SonarQube server')
         string(name: 'NEXUS_URL', defaultValue: 'ec2-44-220-136-131.compute-1.amazonaws.com:8081', description: 'Your Nexus URL')
-        string(name: 'NEXUS_CREDENTIAL', defaultValue: 'nexus_creds', description: 'Your Nexus Credentials')
+        string(name: 'NEXUS_CREDENTIAL', defaultValue: 'nexus_creds', description: 'Your Nexus credentials')
         string(name: 'REMOTE_USER', defaultValue: 'ec2-user', description: 'Remote server username')
-        string(name: 'MONOLITHIC_SERVER', defaultValue: 'monolithic_server', description: 'The monolithic server that Jenkins will SSH into Using Publish Over SSH.')
+        string(name: 'MONOLITHIC_SERVER', defaultValue: 'monolithic_server', description: 'The monolithic server Jenkins will SSH into using Publish Over SSH.')
     }
 
     environment {
@@ -26,11 +26,9 @@ pipeline {
     }
 
     stages {
-        
         stage("Validate Parameters") {
             steps {
                 script {
-                    // Check if required parameters are provided
                     def requiredParameters = ['REMOTE_USER', 'GITHUB_CREDENTIAL', 'GITHUB_REPO_URL', 'GITHUB_BRANCH']
                     for (param in requiredParameters) {
                         if (!params.containsKey(param) || params[param].trim() == "") {
@@ -40,16 +38,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage("Checkout Code From GitHub") {
             steps {
-                script {
-                    git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}", url: "${GITHUB_REPO_URL}"
-                }
+                git branch: "${GITHUB_BRANCH}", credentialsId: "${GITHUB_CREDENTIAL}", url: "${GITHUB_REPO_URL}"
             }
         }
 
-        
         stage('Application Build And Test') {
             steps {
                 sh 'chmod +x ./mvnw'
@@ -67,97 +62,84 @@ pipeline {
                 }
             }
         }
-       
+
         stage('Upload Snapshot to Nexus Repository') {
             steps {
                 script {
-                  def nexusUrl = "${NEXUS_URL}"
-                  def nexusCredentialsId = "${NEXUS_CREDENTIAL}"
-                  def groupId = 'com.app'
-                  def artifactId = 'itgenuine'
-                  def version = '0.0.1-SNAPSHOT'
-                  def packaging = 'jar'
-
-                  def artifactPath = "target/${artifactId}-${version}.${packaging}"
-
-                nexusArtifactUploader(
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    nexusUrl: nexusUrl,
-                    groupId: groupId,
-                    version: version,
-                    repository: 'maven-snapshots',
-                    credentialsId: nexusCredentialsId,
-                    artifacts: [
-                        [artifactId: artifactId,
-                         classifier: '',
-                         file: artifactPath,
-                         type: packaging,
-                         filename: "${artifactId}-${version}.${packaging}"]
-                    ]
-                )
+                    def artifactPath = "target/itgenuine-0.0.1-SNAPSHOT.jar"
+                    nexusArtifactUploader(
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        nexusUrl: "${NEXUS_URL}",
+                        groupId: 'com.app',
+                        version: '0.0.1-SNAPSHOT',
+                        repository: 'maven-snapshots',
+                        credentialsId: "${NEXUS_CREDENTIAL}",
+                        artifacts: [[
+                            artifactId: 'itgenuine',
+                            classifier: '',
+                            file: artifactPath,
+                            type: 'jar',
+                            filename: "itgenuine-0.0.1-SNAPSHOT.jar"
+                        ]]
+                    )
+                }
             }
         }
-    }
-    
-        
-        
+
         stage('Deploy To Monolithic Server') {
             steps {
                 script {
-                   def Command = '''
-                       set -ex
-                       mkdir -p ~/itgenius-app/
-                       cd ~/itgenius-app/
-                # Check if any process is listening on port 8081 and kill it
-                PID=$(/usr/sbin/lsof -t -i:8081)
-                if [ -n "$PID" ]; then
-                    kill $PID || true
-                    echo "Killed process $PID"
-                else
-                    echo "No process found listening on port 8081"
-                fi
+                    def deployCommand = '''
+                        set -ex
+                        mkdir -p ~/itgenius-app/
+                        cd ~/itgenius-app/
 
-                # Run the new jar file
-                java -jar itgenuine-0.0.1-SNAPSHOT.jar > logfile 2>&1 &
-                echo "Started new itgenius application"
-                sleep 7
-                cat logfile
-            '''
+                        # Stop the existing application if running
+                        if pgrep -f "itgenuine-0.0.1-SNAPSHOT.jar" > /dev/null; then
+                            pkill -f "itgenuine-0.0.1-SNAPSHOT.jar" || true
+                            echo "Killed existing process running the JAR"
+                        else
+                            echo "No running JAR process found"
+                        fi
+
+                        # Run the new application
+                        java -jar itgenuine-0.0.1-SNAPSHOT.jar > logfile 2>&1 &
+                        echo "Started new itgenius application"
+                        sleep 7
+                        cat logfile
+                    '''
+
+                    sshPublisher(publishers: [sshPublisherDesc(
+                        configName: env.MONOLITHIC_SERVER,
+                        transfers: [sshTransfer(
+                            sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar, .env',
+                            removePrefix: 'target/',
+                            makeEmptyDirs: false,
+                            remoteDirectory: '/itgenius-app/',
+                            execCommand: deployCommand,
+                            execTimeout: 120000
+                        )],
+                        usePromotionTimestamp: false,
+                        useWorkspaceInPromotion: false,
+                        verbose: true
+                    )])
+                }
+            }
+        }
 
         stage('Verify Prerequisites') {
             steps {
-        sshCommand remote: remoteServerConfig, command: '''
-                if ! command -v lsof &> /dev/null
-            then
-                echo "lsof is not installed. Installing..."
-                sudo yum install -y lsof || sudo apt-get install -y lsof
-            else
-                echo "lsof is already installed."
-                fi
-            '''
-           }
-        
-        }    
-
-            sshPublisher(publishers: [sshPublisherDesc(
-                configName: env.MONOLITHIC_SERVER,
-                transfers: [sshTransfer(
-                    sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar',
-                    removePrefix: 'target/',
-                    makeEmptyDirs: false,
-                    remoteDirectory: '/itgenius-app/',
-                    execCommand: Command,
-                    execTimeout: 120000
-                )],
-                usePromotionTimestamp: false,
-                useWorkspaceInPromotion: false,
-                verbose: true,
-            )])
+                sshCommand remote: remoteServerConfig, command: '''
+                    if ! command -v lsof &> /dev/null
+                    then
+                        echo "lsof is not installed. Installing..."
+                        sudo yum install -y lsof || sudo apt-get install -y lsof
+                    else
+                        echo "lsof is already installed."
+                    fi
+                '''
+            }
         }
-    }
-}
-
-
     }
 }
