@@ -33,6 +33,10 @@ variable "instance_type" {
   description = "The Instance type"
   default     = "t2.micro"
 }
+variable "sonar_nexus.instances" {
+  description = "The Instance type"
+  default     = "t2.medium"
+}
 
 variable "db_name" {
   description = "The name of the database"
