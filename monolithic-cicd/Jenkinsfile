@@ -112,14 +112,24 @@ pipeline {
 
                     sshPublisher(publishers: [sshPublisherDesc(
                         configName: env.MONOLITHIC_SERVER,
-                        transfers: [sshTransfer(
-                            sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar, monolithic-cicd/.env',
-                            removePrefix: 'target/',
-                            makeEmptyDirs: false,
-                            remoteDirectory: '/itgenius-app/',
-                            execCommand: deployCommand,
-                            execTimeout: 120000
-                        )],
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: 'target/itgenuine-0.0.1-SNAPSHOT.jar',
+                                removePrefix: 'target/',
+                                makeEmptyDirs: false,
+                                remoteDirectory: '/itgenius-app/',
+                                execCommand: deployCommand,
+                                execTimeout: 120000
+                            ),
+                            sshTransfer(
+                                sourceFiles: 'monolithic-cicd/.env',
+                                removePrefix: '', // No prefix to remove for .env file
+                                makeEmptyDirs: false,
+                                remoteDirectory: '/itgenius-app/',
+                                execCommand: '',
+                                execTimeout: 120000
+                            )
+                        ],
                         usePromotionTimestamp: false,
                         useWorkspaceInPromotion: false,
                         verbose: true
