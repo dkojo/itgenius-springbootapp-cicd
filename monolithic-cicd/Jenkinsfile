@@ -118,15 +118,15 @@ pipeline {
                                 removePrefix: 'target/',
                                 makeEmptyDirs: false,
                                 remoteDirectory: '/itgenius-app/',
-                                execCommand: deployCommand,
                                 execTimeout: 120000
+                                
                             ),
                             sshTransfer(
                                 sourceFiles: 'monolithic-cicd/.env',
-                                removePrefix: '', // No prefix to remove for .env file
+                                removePrefix: 'monolithic-cicd/', // No prefix to remove for .env file
                                 makeEmptyDirs: false,
                                 remoteDirectory: '/itgenius-app/',
-                                execCommand: '',
+                                execCommand: deployCommand,
                                 execTimeout: 120000
                             )
                         ],
