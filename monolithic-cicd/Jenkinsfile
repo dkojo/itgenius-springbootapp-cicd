@@ -1,15 +1,15 @@
 pipeline {
     agent any
     options {
-        timeout(time: 10, unit: 'MINUTES')
+        timeout(time: 15, unit: 'MINUTES')
     }
     parameters {
         string(name: 'GITHUB_CREDENTIAL', defaultValue: 'github_creds', description: 'Github access credentials id')
         string(name: 'GITHUB_REPO_URL', defaultValue: 'https://github.com/dkojo/itgenius-springbootapp-cicd.git', description: 'Github repository URL')
         string(name: 'GITHUB_BRANCH', defaultValue: 'main', description: 'Github branch for your build')
         string(name: 'SONARQUBE_SERVER_NAME', defaultValue: 'sonarqube_server', description: 'Name for your SonarQube server')
-        string(name: 'NEXUS_URL', defaultValue: 'ec2-44-220-136-131.compute-1.amazonaws.com:8081', description: 'Your Nexus URL')
-        string(name: 'NEXUS_CREDENTIAL', defaultValue: 'nexus_creds', description: 'Your Nexus credentials')
+        //string(name: 'NEXUS_URL', defaultValue: 'ec2-44-220-136-131.compute-1.amazonaws.com:8081', description: 'Your Nexus URL')
+        //string(name: 'NEXUS_CREDENTIAL', defaultValue: 'nexus_creds', description: 'Your Nexus credentials')
         string(name: 'REMOTE_USER', defaultValue: 'ec2-user', description: 'Remote server username')
         string(name: 'MONOLITHIC_SERVER', defaultValue: 'monolithic_server', description: 'The monolithic server Jenkins will SSH into using Publish Over SSH.')
     }
@@ -20,8 +20,8 @@ pipeline {
         GITHUB_REPO_URL = "${params.GITHUB_REPO_URL}"
         GITHUB_BRANCH = "${params.GITHUB_BRANCH}"
         SONARQUBE_SERVER_NAME = "${params.SONARQUBE_SERVER_NAME}"
-        NEXUS_URL = "${params.NEXUS_URL}"
-        NEXUS_CREDENTIAL = "${params.NEXUS_CREDENTIAL}"
+       // NEXUS_URL = "${params.NEXUS_URL}"
+       // NEXUS_CREDENTIAL = "${params.NEXUS_CREDENTIAL}"
         MONOLITHIC_SERVER = "${params.MONOLITHIC_SERVER}"
     }
 
@@ -63,7 +63,7 @@ pipeline {
             }
         }
 
-        stage('Upload Snapshot to Nexus Repository') {
+        /*stage('Upload Snapshot to Nexus Repository') {
             steps {
                 script {
                     def artifactPath = "target/itgenuine-0.0.1-SNAPSHOT.jar"
@@ -85,7 +85,7 @@ pipeline {
                     )
                 }
             }
-        }
+        } */
 
         stage('Deploy To Monolithic Server') {
             steps {
